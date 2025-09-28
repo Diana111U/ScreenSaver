@@ -8,6 +8,7 @@ namespace ScreenSaver
         int activeSnowflakesCount = 0;
         private Snowflake[] Snowflakes;
         int[] Sizes = [32, 64];
+
         public MainForm()
         {
             InitializeComponent();
@@ -34,5 +35,25 @@ namespace ScreenSaver
                
         }
        
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            if(activeSnowflakesCount<SNOWFLAKESCOUNT)
+            {
+                InitializeSnowflake();
+            }
+
+            foreach(Snowflake snow in Snowflakes)
+            {
+                snow.Y += snow.Speed;
+
+                if(snow.Y > ClientSize.Height)
+                {
+                    if (snow.Size == 32) snow.Y = -32;
+                    else snow.Y = -64;
+                }
+            }
+
+
+        }
     }
 }
