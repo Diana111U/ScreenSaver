@@ -35,7 +35,7 @@
             // timer
             // 
             timer.Interval = 50;
-            timer.Tick += this.Timer_Tick;
+            timer.Tick += Timer_Tick;
             // 
             // MainForm
             // 
@@ -45,6 +45,9 @@
             FormBorderStyle = FormBorderStyle.None;
             Name = "MainForm";
             Text = "Form1";
+            Load += MainForm_Load;
+            Paint += MainForm_Paint;
+            KeyDown += MainForm_KeyDown;
             ResumeLayout(false);
         }
 

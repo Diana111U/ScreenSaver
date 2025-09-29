@@ -1,4 +1,4 @@
-using ScreenSaver.Classes;
+﻿using ScreenSaver.Classes;
 
 namespace ScreenSaver
 {
@@ -6,54 +6,102 @@ namespace ScreenSaver
     {
         const int SNOWFLAKESCOUNT = 100;
         int activeSnowflakesCount = 0;
-        private Snowflake[] Snowflakes;
-        int[] Sizes = [32, 64];
+        private Image scene = new Bitmap(1, 1);
+        private readonly Image pictureBackground = Properties.Resources.switzerkand;
+        private readonly Image pictureSnowflake = Properties.Resources.snowflake;
+        private readonly Snowflake[] Snowflakes = new Snowflake[SNOWFLAKESCOUNT];
 
         public MainForm()
         {
             InitializeComponent();
         }
 
-        private void InitializeSnowflake()
+        /// <summary>
+        /// Инициализация снежинок
+        /// </summary>
+        private void InitializeSnowflakes()
         {
             Random rnd = new Random();
-            int x = rnd.Next(ClientSize.Width);
-            int y = rnd.Next(ClientSize.Height);
-            int size = Sizes[rnd.Next(2)];
-            int speed;
-            if (size == 32)
+            int[] Sizes = [32, 64];
+            int y, speed;
+            for (var i = 0; i < SNOWFLAKESCOUNT; i++)
             {
-                speed = 3;
-            }
-            else
-            {
-                speed = 5;
+                int x = rnd.Next(ClientSize.Width);
+                int size = Sizes[rnd.Next(2)];
+                if (size == 32)
+                {
+                    y = -32;
+                    speed = 3;
+                }
+                else
+                {
+                    y = -64;
+                    speed = 6;
+                }
+                Snowflakes[i] = new Snowflake(x, y, size, speed);
             }
 
-            Snowflakes[activeSnowflakesCount] = new Snowflake(x, y, size, speed);
-            activeSnowflakesCount++;
-               
         }
-       
+
+        /// <summary>
+        /// Таймер
+        /// </summary>
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            if(activeSnowflakesCount<SNOWFLAKESCOUNT)
+            if (activeSnowflakesCount < SNOWFLAKESCOUNT)
             {
-                InitializeSnowflake();
+                activeSnowflakesCount++;
             }
 
-            foreach(Snowflake snow in Snowflakes)
+            for (var i = 0; i < activeSnowflakesCount; i++)
             {
-                snow.Y += snow.Speed;
-
-                if(snow.Y > ClientSize.Height)
+                Snowflakes[i].Y += Snowflakes[i].Speed;
+                if (Snowflakes[i].Y > ClientSize.Height)
                 {
-                    if (snow.Size == 32) snow.Y = -32;
-                    else snow.Y = -64;
+                    if (Snowflakes[i].Size == 32)
+                    {
+                        Snowflakes[i].Y = -32;
+                    }
+                    else
+                    {
+                        Snowflakes[i].Y = -64;
+                    }
                 }
             }
+            MainForm_Paint(this, new PaintEventArgs(CreateGraphics(), ClientRectangle));
 
+        }
 
+        /// <summary>
+        /// Отрисовка формы
+        /// </summary>
+        private void MainForm_Paint(object sender, PaintEventArgs e)
+        {
+            var bg = Graphics.FromImage(scene);
+            bg.DrawImage(pictureBackground, 0, 0, Width, Height);
+            for (int i = 0; i < activeSnowflakesCount; i++)
+            {
+                bg.DrawImage(pictureSnowflake, Snowflakes[i].X, Snowflakes[i].Y, Snowflakes[i].Size, Snowflakes[i].Size);
+            }
+            e.Graphics.DrawImage(scene, new Point(0, 0));
+        }
+
+        /// <summary>
+        /// Закрытие формы при нажатии на клавишу
+        /// </summary>
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            this.Close();
+        }
+
+        /// <summary>
+        /// Загрузка формы
+        /// </summary>
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            scene = new Bitmap(ClientSize.Width, ClientSize.Height);
+            InitializeSnowflakes();
+            timer.Start();
         }
     }
 }
