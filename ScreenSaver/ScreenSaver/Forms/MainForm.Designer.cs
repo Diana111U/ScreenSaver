@@ -30,12 +30,18 @@
         {
             components = new System.ComponentModel.Container();
             timer = new System.Windows.Forms.Timer(components);
+            timer1 = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
             // timer
             // 
             timer.Interval = 50;
             timer.Tick += Timer_Tick;
+            // 
+            // timer1
+            // 
+            timer1.Interval = 700;
+            timer1.Tick += Timer1_Tick;
             // 
             // MainForm
             // 
@@ -45,6 +51,7 @@
             FormBorderStyle = FormBorderStyle.None;
             Name = "MainForm";
             Text = "Form1";
+            WindowState = FormWindowState.Maximized;
             Load += MainForm_Load;
             Paint += MainForm_Paint;
             KeyDown += MainForm_KeyDown;
@@ -54,5 +61,6 @@
         #endregion
 
         private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.Timer timer1;
     }
 }

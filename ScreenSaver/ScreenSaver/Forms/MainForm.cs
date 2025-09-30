@@ -4,12 +4,12 @@ namespace ScreenSaver
 {
     public partial class MainForm : Form
     {
-        const int SNOWFLAKESCOUNT = 100;
+        const int SnowflakesCount = 100;
         int activeSnowflakesCount = 0;
         private Image scene = new Bitmap(1, 1);
         private readonly Image pictureBackground = Properties.Resources.switzerkand;
         private readonly Image pictureSnowflake = Properties.Resources.snowflake;
-        private readonly Snowflake[] Snowflakes = new Snowflake[SNOWFLAKESCOUNT];
+        private readonly Snowflake[] Snowflakes = new Snowflake[SnowflakesCount];
 
         public MainForm()
         {
@@ -21,51 +21,30 @@ namespace ScreenSaver
         /// </summary>
         private void InitializeSnowflakes()
         {
-            Random rnd = new Random();
-            int[] Sizes = [32, 64];
-            int y, speed;
-            for (var i = 0; i < SNOWFLAKESCOUNT; i++)
+            var rnd = new Random();
+            var Sizes = new[] { 32, 64 };
+            for (var i = 0; i < SnowflakesCount; i++)
             {
-                int x = rnd.Next(ClientSize.Width);
-                int size = Sizes[rnd.Next(2)];
-                if (size == 32)
-                {
-                    y = -32;
-                    speed = 3;
-                }
-                else
-                {
-                    y = -64;
-                    speed = 6;
-                }
+                var x = rnd.Next(ClientSize.Width);
+                var size = Sizes[rnd.Next(2)];
+                var y = -size;
+                var speed = 6 * size / 64;
                 Snowflakes[i] = new Snowflake(x, y, size, speed);
             }
 
         }
 
         /// <summary>
-        /// Таймер
+        /// Таймер движения снежинок
         /// </summary>
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            if (activeSnowflakesCount < SNOWFLAKESCOUNT)
-            {
-                activeSnowflakesCount++;
-            }
-
             for (var i = 0; i < activeSnowflakesCount; i++)
             {
                 Snowflakes[i].Y += Snowflakes[i].Speed;
                 if (Snowflakes[i].Y > ClientSize.Height)
                 {
-                    if (Snowflakes[i].Size == 32)
-                    {
-                        Snowflakes[i].Y = -32;
-                    }
-                    else
-                    {
-                        Snowflakes[i].Y = -64;
-                    }
+                    Snowflakes[i].Y = -Snowflakes[i].Size;
                 }
             }
             MainForm_Paint(this, new PaintEventArgs(CreateGraphics(), ClientRectangle));
@@ -102,6 +81,18 @@ namespace ScreenSaver
             scene = new Bitmap(ClientSize.Width, ClientSize.Height);
             InitializeSnowflakes();
             timer.Start();
+            timer1.Start();
+        }
+
+        /// <summary>
+        /// Таймер счёта активных снежинок
+        /// </summary>
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            if (activeSnowflakesCount < SnowflakesCount)
+            {
+                activeSnowflakesCount++;
+            }
         }
     }
 }
